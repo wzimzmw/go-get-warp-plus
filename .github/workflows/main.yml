@@ -1,13 +1,25 @@
-name: WARP-ULTRA
+name: WARP-ULTRA-STABLE
 on:
   workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Run Script
+      - name: Create and Run Script
         run: |
-          curl -O https://raw.githubusercontent.com/ALIILAPRO/warp-plus-go/main/warp-plus.py
-          python3 warp-plus.py <<EOF
-          ${{ secrets.WARP_ID }}
+          cat << 'EOF' > warp.py
+          import urllib.request, json, datetime, random, string
+          def genString(stringLength):
+              return ''.join(random.choice(string.ascii_letters + string.digits) for i in range(stringLength))
+          url = f'https://api.cloudflareclient.com/v0a{random.randint(100, 999)}/reg'
+          def run():
+              install_id = genString(22)
+              body = {"key": f"{genString(43)}=", "install_id": install_id, "fcm_token": f"{install_id}:APA91b{genString(134)}", "referrer": "${{ secrets.WARP_ID }}", "warp_enabled": False, "tos": datetime.datetime.now().isoformat() + 'Z', "type": "Android", "locale": "en_US"}
+              data = json.dumps(body).encode('utf8')
+              headers = {'Content-Type': 'application/json; charset=UTF-8', 'Host': 'api.cloudflareclient.com', 'Connection': 'Keep-Alive', 'Accept-Encoding': 'gzip', 'User-Agent': 'okhttp/3.12.1'}
+              req = urllib.request.Request(url, data, headers)
+              with urllib.request.urlopen(req) as f:
+                  print(f"Status: {f.getcode()} - 1GB Added!")
+          for i in range(10): run()
           EOF
+          python3 warp.py
