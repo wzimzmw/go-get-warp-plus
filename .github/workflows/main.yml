@@ -1,4 +1,4 @@
-name: WARP-ULTRA-STABLE
+name: WARP-STABLE
 on:
   workflow_dispatch:
 jobs:
@@ -8,18 +8,22 @@ jobs:
       - name: Create and Run Script
         run: |
           cat << 'EOF' > warp.py
-          import urllib.request, json, datetime, random, string
+          import urllib.request, json, datetime, random, string, time
           def genString(stringLength):
               return ''.join(random.choice(string.ascii_letters + string.digits) for i in range(stringLength))
-          url = f'https://api.cloudflareclient.com/v0a{random.randint(100, 999)}/reg'
           def run():
-              install_id = genString(22)
-              body = {"key": f"{genString(43)}=", "install_id": install_id, "fcm_token": f"{install_id}:APA91b{genString(134)}", "referrer": "${{ secrets.WARP_ID }}", "warp_enabled": False, "tos": datetime.datetime.now().isoformat() + 'Z', "type": "Android", "locale": "en_US"}
-              data = json.dumps(body).encode('utf8')
-              headers = {'Content-Type': 'application/json; charset=UTF-8', 'Host': 'api.cloudflareclient.com', 'Connection': 'Keep-Alive', 'Accept-Encoding': 'gzip', 'User-Agent': 'okhttp/3.12.1'}
-              req = urllib.request.Request(url, data, headers)
-              with urllib.request.urlopen(req) as f:
-                  print(f"Status: {f.getcode()} - 1GB Added!")
-          for i in range(10): run()
+              try:
+                  install_id = genString(22)
+                  body = {"key": f"{genString(43)}=", "install_id": install_id, "fcm_token": f"{install_id}:APA91b{genString(134)}", "referrer": "${{ secrets.WARP_ID }}", "warp_enabled": False, "tos": datetime.datetime.now().isoformat() + 'Z', "type": "Android", "locale": "en_US"}
+                  data = json.dumps(body).encode('utf8')
+                  headers = {'Content-Type': 'application/json; charset=UTF-8', 'Host': 'api.cloudflareclient.com', 'Connection': 'Keep-Alive', 'Accept-Encoding': 'gzip', 'User-Agent': 'okhttp/3.12.1'}
+                  req = urllib.request.Request('https://api.cloudflareclient.com/v0a1922/reg', data, headers)
+                  with urllib.request.urlopen(req) as f:
+                      print(f"Success: 1GB Added (Status {f.getcode()})")
+              except Exception as e:
+                  print(f"Retry: Cloudflare busy, continuing...")
+          for i in range(5): 
+              run()
+              time.sleep(2)
           EOF
           python3 warp.py
