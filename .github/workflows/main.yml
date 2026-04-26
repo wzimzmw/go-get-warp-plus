@@ -1,18 +1,13 @@
-
-name: WARP-FORCE
+name: WARP-ULTRA
 on:
   workflow_dispatch:
 jobs:
-  warp:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Auto-Run
+      - name: Run Script
         run: |
-          # 下载最新的自动化脚本
-          wget -O warp.py https://raw.githubusercontent.com/thefated/WARP-Plus-Cloudflare/main/wp-plus.py
-          # 运行并强制注入你存好的 ID
-          python3 warp.py <<EOF
+          curl -O https://raw.githubusercontent.com/ALIILAPRO/warp-plus-go/main/warp-plus.py
+          python3 warp-plus.py <<EOF
           ${{ secrets.WARP_ID }}
           EOF
