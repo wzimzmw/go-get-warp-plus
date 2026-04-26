@@ -1,15 +1,14 @@
-name: WARP-Plus-Go
+name: WARP-GET
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 */6 * * *' # 每6小时自动跑一次
+  workflow_dispatch: # 手动运行开关
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Run WARP+
+      - uses: actions/checkout@v4
+      - name: Run Script
         run: |
           wget https://github.com/ALIILAPRO/warp-plus-go/releases/download/v1.0.8/warp-plus-go_1.0.8_linux_amd64.tar.gz
           tar -xvf warp-plus-go_1.0.8_linux_amd64.tar.gz
+          chmod +x ./warp-plus-go
           ./warp-plus-go --id ${{ secrets.WARP_ID }} --make
